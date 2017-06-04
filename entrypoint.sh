@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 
-#!/usr/bin/env bash
 
 error_msg(){
-      echo "There is no environment variable to config mysql for barnyard writes" > /dev/stderr
+      echo "There is no environment variable to config mysql" > /dev/stderr
       rm /etc/snort/config.lock
 }
 
 if [ -e /etc/snort/configured ]; then
-	echo "Barnyard Configuration has been compeleted before this time..."
-  barnyard2 -c /etc/snort/barnyard2.conf -d /var/log/snort -f snort.u2 -w /var/log/snort/barnyard2.waldo -g snort -u snort -D
+	echo "Configuration has been compeleted before this time..."
+        barnyard2 -c /etc/snort/barnyard2.conf -d /var/log/snort -f snort.u2 -w /var/log/snort/barnyard2.waldo -g snort -u snort -D
+	snort -q -u snort -g snort -c /etc/snort/snort.conf $@
+	service apache2 start
 	exit 0
 fi
 
