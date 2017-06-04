@@ -29,7 +29,7 @@ gem install rails -v '3.2.13' ;\
 gem install passenger -v '5.1.4' ;\
 gem install public_suffix -v '1.4.6' ;\
 mkdir -p /var/www/html/snorby/ ;\
-unzip -d /var/www/html/snorby snorby.zip ;\
+unzip -d /var/www/html/snorby /opt/snorby.zip ;\
 cd /var/www/html/snorby ;\
 bundle install --full-index --with=production --without=development test ;\
 cp -fv config/snorby_config.yml.example config/snorby_config.yml ;\
