@@ -32,8 +32,8 @@ mkdir -p /var/www/html/snorby/ ;\
 unzip -d /var/www/html/snorby /opt/snorby.zip ;\
 cd /var/www/html/snorby ;\
 bundle install --full-index --with=production --without=development test ;\
-cp -fv config/snorby_config.yml.example config/snorby_config.yml ;\
-cp -fv config/database.yml.example config/database.yml ;\
+cp -fv /var/www/html/snorby/config/snorby_config.yml.example /var/www/html/snorby/config/snorby_config.yml ;\
+cp -fv /var/www/html/snorby/config/database.yml.example /var/www/html/snorby/config/database.yml ;\
 ln -s /etc/apache2/conf-available/passenger.conf /etc/apache2/conf-enabled/ ;\
 rm -fv /etc/apache2/sites-enabled/* ;\
 ln -s /etc/apache2/sites-available/snorby.conf /etc/apache2/sites-enabled/ ;\
