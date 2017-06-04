@@ -10,6 +10,7 @@ ADD ruby-1.9.3-p551.tar.gz /opt/
 WORKDIR /opt/
 ADD Gemfile /var/www/html/snorby/
 ADD Gemfile.lock /var/www/html/snorby/
+ADD entrypoint.sh /opt/
 COPY apache-virtualhost-snorby.conf /etc/apache2/sites-available/snorby.conf
 COPY apache-passenger.conf /etc/apache2/conf-available/passenger.conf
 RUN apt-get update ;\
@@ -35,5 +36,6 @@ cp -fv config/snorby_config.yml.example config/snorby_config.yml ;\
 cp -fv config/database.yml.example config/database.yml ;\
 ln -s /etc/apache2/conf-available/passenger.conf /etc/apache2/conf-enabled/ ;\
 rm -fv /etc/apache2/sites-enabled/* ;\
-ln -s /etc/apache2/sites-available/snorby.conf /etc/apache2/sites-enabled/
-ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+ln -s /etc/apache2/sites-available/snorby.conf /etc/apache2/sites-enabled/ ;\
+chmod +x /opt/entrypoint.sh
+ENTRYPOINT ["/opt/entrypoint.sh"]
