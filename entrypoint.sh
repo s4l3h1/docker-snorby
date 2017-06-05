@@ -2,9 +2,13 @@
 
 
 run(){
+	echo $@
+	echo "Starting apache2"
 	service apache2 start
+	echo "Starting barnyard"
         barnyard2 -c /etc/snort/barnyard2.conf -d /var/log/snort -f snort.u2 -w /var/log/snort/barnyard2.waldo -g snort -u snort -D
-	snort -q -u snort -g snort -c /etc/snort/snort.conf $@
+	echo "Starting snort"
+	snort -u snort -g snort -c /etc/snort/snort.conf -i eth0
 	exit 0
 
 }
@@ -40,7 +44,7 @@ if [ ! -e /etc/snort/config.lock ]; then
 	error_msg
    else
         cd /var/www/html/snorby
-        sed -e 's/username.*/username: $mysql_user/' -e 's/password.*/password: $mysql_password/' -e 's/host.*/host: $mysql_host/' config/database.yml
+        sed -i -e 's/username.*/username: $mysql_user/' -e 's/password.*/password: $mysql_password/' -e 's/host.*/host: $mysql_host/' config/database.yml
         RAILS_ENV=production bundle exec rake snorby:setup
         mysql --host=$mysql_host -u$mysql_user -p$mysql_password $mysql_db -e "source /opt/snort_src/barnyard2-master/schemas/create_mysql;"
         echo "output database: log, mysql, user=$mysql_user password=$mysql_password dbname=$mysql_db host=$mysql_host sensor name=$sensor_name" | tee -a /etc/snort/barnyard2.conf
