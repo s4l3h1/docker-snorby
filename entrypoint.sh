@@ -1,17 +1,24 @@
 #!/usr/bin/env bash
 
 
+run(){
+	service apache2 start
+        barnyard2 -c /etc/snort/barnyard2.conf -d /var/log/snort -f snort.u2 -w /var/log/snort/barnyard2.waldo -g snort -u snort -D
+	snort -q -u snort -g snort -c /etc/snort/snort.conf $@
+	exit 0
+
+}
+
 error_msg(){
       echo "There is no environment variable to config mysql" > /dev/stderr
       rm /etc/snort/config.lock
 }
 
+
+
 if [ -e /etc/snort/configured ]; then
 	echo "Configuration has been compeleted before this time..."
-        barnyard2 -c /etc/snort/barnyard2.conf -d /var/log/snort -f snort.u2 -w /var/log/snort/barnyard2.waldo -g snort -u snort -D
-	snort -q -u snort -g snort -c /etc/snort/snort.conf $@
-	service apache2 start
-	exit 0
+	run
 fi
 
 if [ ! -e /etc/snort/config.lock ]; then
@@ -38,7 +45,7 @@ if [ ! -e /etc/snort/config.lock ]; then
         mysql --host=$mysql_host -u$mysql_user -p$mysql_password $mysql_db -e "source /opt/snort_src/barnyard2-master/schemas/create_mysql;"
         echo "output database: log, mysql, user=$mysql_user password=$mysql_password dbname=$mysql_db host=$mysql_host sensor name=$sensor_name" | tee -a /etc/snort/barnyard2.conf
 	touch /etc/snort/configured 
-        exit 0
+	run
    fi
 fi
 
