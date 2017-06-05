@@ -32,7 +32,7 @@ mv snorby-master/* /var/www/html/snorby/ ;\
 WORKDIR /var/www/html/snorby 
 ADD Gemfile /var/www/html/snorby/
 ADD Gemfile.lock /var/www/html/snorby/
-bundle install --full-index --with=production --without=development test ;\
+RUN bundle install --full-index --with=production --without=development test ;\
 echo -en "\n\n\n\n" | passenger-install-apache2-module ;\
 cp -fv /var/www/html/snorby/config/snorby_config.yml.example /var/www/html/snorby/config/snorby_config.yml ;\
 cp -fv /var/www/html/snorby/config/database.yml.example /var/www/html/snorby/config/database.yml ;\
