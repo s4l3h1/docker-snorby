@@ -41,4 +41,5 @@ ln -s /etc/apache2/conf-available/passenger.conf /etc/apache2/conf-enabled/ ;\
 rm -fv /etc/apache2/sites-enabled/* ;\
 ln -s /etc/apache2/sites-available/snorby.conf /etc/apache2/sites-enabled/ ;\
 chmod +x /opt/entrypoint.sh
-ENTRYPOINT ["/opt/entrypoint.sh"]
+ENTRYPOINT [""]
+CMD ["/opt/entrypoint.sh"]
