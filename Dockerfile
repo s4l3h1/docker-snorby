@@ -28,6 +28,7 @@ gem install passenger -v '5.1.4' ;\
 gem install public_suffix -v '1.4.6' ;\
 cd /opt ;\
 unzip snorby.zip ;\
+mkdir /var/www/html/snorby/ ;\
 mv snorby-master/* /var/www/html/snorby/
 WORKDIR /var/www/html/snorby 
 ADD Gemfile /var/www/html/snorby/
