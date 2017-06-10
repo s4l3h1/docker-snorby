@@ -56,7 +56,6 @@ if [ ! -e /etc/snort/config.lock ]; then
 		RAILS_ENV=production bundle exec rake secret
 		RAILS_ENV=production bundle exec rake db:autoupgrade
 		RAILS_ENV=production bundle exec rake db:seed
-		RAILS_ENV=production bundle exec rails runner "User.create(:name => 'Administrator', :email => 'snorby@snorby.org', :password => 'snorby', :password_confirmation => 'snorby', :admin => true)"
 		mysql --host=$mysql_host -u$mysql_user -p$mysql_password $mysql_db -e "source /opt/snort_src/barnyard2-master/schemas/create_mysql;"
 		echo "output database: log, mysql, user=$mysql_user password=$mysql_password dbname=$mysql_db host=$mysql_host sensor name=$sensor_name" | tee -a /etc/snort/barnyard2.conf
 		touch /etc/snort/configured 
