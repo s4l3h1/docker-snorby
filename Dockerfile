@@ -8,9 +8,6 @@ ADD sources.list /etc/apt/sources.list
 ADD snorby.zip /opt/
 ADD ruby-1.9.3-p551.tar.gz /opt/
 WORKDIR /opt/
-ADD entrypoint.sh /opt/
-COPY apache-virtualhost-snorby.conf /etc/apache2/sites-available/snorby.conf
-COPY apache-passenger.conf /etc/apache2/conf-available/passenger.conf
 RUN apt-get update ;\
     apt-get install -y libgdbm-dev libncurses5-dev apache2-dev git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev imagemagick apache2 libyaml-dev libxml2-dev libxslt-dev git libssl-dev imagemagick apache2 libyaml-dev libxml2-dev libxslt-dev git postgresql-server-dev-all libpq-dev vim wget libmysqlclient-dev unzip libmysqlclient-dev;\
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ;\
@@ -34,12 +31,15 @@ WORKDIR /var/www/html/snorby
 ADD Gemfile /var/www/html/snorby/
 ADD Gemfile.lock /var/www/html/snorby/
 RUN bundle install --full-index --with=production --without=development test ;\
-echo -en "\n\n\n\n" | passenger-install-apache2-module ;\
-cp -fv /var/www/html/snorby/config/snorby_config.yml.example /var/www/html/snorby/config/snorby_config.yml ;\
+echo -en "\n\n\n\n" | passenger-install-apache2-module 
+RUN cp -fv /var/www/html/snorby/config/snorby_config.yml.example /var/www/html/snorby/config/snorby_config.yml ;\
 cp -fv /var/www/html/snorby/config/database.yml.example /var/www/html/snorby/config/database.yml ;\
 ln -s /etc/apache2/conf-available/passenger.conf /etc/apache2/conf-enabled/ ;\
 rm -fv /etc/apache2/sites-enabled/* ;\
-ln -s /etc/apache2/sites-available/snorby.conf /etc/apache2/sites-enabled/ ;\
-chmod +x /opt/entrypoint.sh
+ln -s /etc/apache2/sites-available/snorby.conf /etc/apache2/sites-enabled/ 
+ADD entrypoint.sh /opt/
+COPY apache-virtualhost-snorby.conf /etc/apache2/sites-available/snorby.conf
+COPY apache-passenger.conf /etc/apache2/conf-available/passenger.conf
+RUN chmod +x /opt/entrypoint.sh
 ENTRYPOINT [""]
 CMD ["/opt/entrypoint.sh"]
