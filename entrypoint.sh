@@ -2,13 +2,10 @@
 
 
 run(){
-	echo $@
-	echo "Starting apache2"
+	set -x
 	service apache2 start
-	echo "Starting barnyard"
-        barnyard2 -c /etc/snort/barnyard2.conf -d /var/log/snort -f snort.u2 -w /var/log/snort/barnyard2.waldo -g snort -u snort -D
-	echo "Starting snort"
-	snort -u snort -g snort -c /etc/snort/snort.conf -i eth0
+	snort -u snort -g snort -c /etc/snort/snort.conf -D -i eno3 &
+        barnyard2 -D -c /etc/snort/barnyard2.conf -d /var/log/snort -f snort.u2 -w /var/log/snort/barnyard2.waldo -g snort -u snort
 	exit 0
 
 }
@@ -44,12 +41,27 @@ if [ ! -e /etc/snort/config.lock ]; then
 	error_msg
    else
         cd /var/www/html/snorby
-        sed -i -e 's/username.*/username: $mysql_user/' -e 's/password.*/password: $mysql_password/' -e 's/host.*/host: $mysql_host/' config/database.yml
-        RAILS_ENV=production bundle exec rake snorby:setup
-        mysql --host=$mysql_host -u$mysql_user -p$mysql_password $mysql_db -e "source /opt/snort_src/barnyard2-master/schemas/create_mysql;"
-        echo "output database: log, mysql, user=$mysql_user password=$mysql_password dbname=$mysql_db host=$mysql_host sensor name=$sensor_name" | tee -a /etc/snort/barnyard2.conf
-	touch /etc/snort/configured 
-	run
+	echo $mysql_host
+	echo $mysql_user
+	echo $mysql_password
+	echo $mysql_db
+	echo $sensor_name
+
+	mysql -h$mysql_host -u$mysql_user -p$mysql_password $mysql_db -e exit
+	if [ $? -ne 0 ]; then
+		echo "Database is not ready"
+	else
+		sed -e 's/username.*/username: '"$mysql_user"'/' -e 's/password.*/password: '"$mysql_password"'/' -e 's/host.*/host: '"$mysql_host"'/' config/database.yml
+		sed -i -e 's/username.*/username: '"$mysql_user"'/' -e 's/password.*/password: '"$mysql_password"'/' -e 's/host.*/host: '"$mysql_host"'/' config/database.yml
+		RAILS_ENV=production bundle exec rake secret
+		RAILS_ENV=production bundle exec rake db:autoupgrade
+		RAILS_ENV=production bundle exec rake db:seed
+		RAILS_ENV=production bundle exec rails runner "User.create(:name => 'Administrator', :email => 'snorby@snorby.org', :password => 'snorby', :password_confirmation => 'snorby', :admin => true)"
+		mysql --host=$mysql_host -u$mysql_user -p$mysql_password $mysql_db -e "source /opt/snort_src/barnyard2-master/schemas/create_mysql;"
+		echo "output database: log, mysql, user=$mysql_user password=$mysql_password dbname=$mysql_db host=$mysql_host sensor name=$sensor_name" | tee -a /etc/snort/barnyard2.conf
+		touch /etc/snort/configured 
+		run
+	fi
    fi
 fi
 
