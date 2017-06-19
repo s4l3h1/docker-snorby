@@ -1,16 +1,15 @@
-FROM s4l3h1/docker-snort-barnyard
+FROM s4l3h1/docker-barnyard
 MAINTAINER Muhammad Salehi <salehi1994@gmail.com>
 ENV DEBIAN_FRONTEND noninteractive
 ENV COVERALLS_TOKEN [secure]
 ENV CXX g++
 ENV CC gcc
-ADD sources.list /etc/apt/sources.list
 ADD snorby.zip /opt/
 ADD ruby-1.9.3-p551.tar.gz /opt/
 WORKDIR /opt/
 RUN apt-get update ;\
-    apt-get install -y libgdbm-dev libncurses5-dev apache2-dev git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev imagemagick apache2 libyaml-dev libxml2-dev libxslt-dev git libssl-dev imagemagick apache2 libyaml-dev libxml2-dev libxslt-dev git postgresql-server-dev-all libpq-dev vim wget libmysqlclient-dev unzip libmysqlclient-dev;\
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ;\
+apt-get install -y libgdbm-dev libncurses5-dev apache2-dev git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev imagemagick apache2 libyaml-dev libxml2-dev libxslt-dev git libssl-dev imagemagick apache2 libyaml-dev libxml2-dev libxslt-dev git postgresql-server-dev-all libpq-dev vim wget libmysqlclient-dev unzip libmysqlclient-dev ;\
+apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ;\
 tar -xvzf ruby-1.9.3-p551.tar.gz ;\
 cd ruby-1.9.3-p551 ;\
 ./configure ;\
